@@ -85,20 +85,10 @@ app-root {
   border-radius: 2px;
   border: 1px solid #dce5f2;
   box-shadow: 0 1px 4px rgba(53,60,72,0.1);
-  padding: 30px 0;
+  padding: 30px;
 }
-form {
-  flex: 1 0;
-  padding: 0 40px;
-}
-input[type="email"], input[type="password"] {
-  display: block;
-  border: none;
-  background: #ffffff;
-  font-size: 13px;
-  padding: 6px 30px 6px 10px;
-  border-radius: 1px;
-  border: 1px solid #eeeeee;
+example-one {
+
 }
 label {
   margin-bottom: 20px;
@@ -109,6 +99,13 @@ h3 {
 auth-message {
   margin-bottom: 20px;
 }
-app-root div > button {
-  margin: 0 0 20px 30px;
+.users {
+  margin-top: 20px;
+  display: flex;
+}
+example-one {
+  background: rgba(0, 0, 0, 0.1);
+}
+example-one, example-two {
+  padding: 10px 15px;
 }
