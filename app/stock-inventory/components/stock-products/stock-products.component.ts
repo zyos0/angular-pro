@@ -1,5 +1,6 @@
 import {Component, EventEmitter, Input, Output} from "@angular/core";
 import {FormArray, FormGroup} from "@angular/forms";
+import {Product} from "../../models/products.interface";
 
 @Component({
   selector: 'stock-products',
@@ -12,7 +13,10 @@ import {FormArray, FormGroup} from "@angular/forms";
         >
           <div class="stock-product__content" [formGroupName]="i">
             <div class="stock-product__name">
-              {{item.value.product_id}}
+              {{getProduct(item.value.product_id).name}}
+            </div>
+            <div class="stock-product__price">
+              {{getProduct(item.value.product_id).price | currency:'USD':true}}
             </div>
             <input type="number"
                    step="10"
@@ -36,6 +40,14 @@ import {FormArray, FormGroup} from "@angular/forms";
 export class StockProductsComponent {
   @Input()
   parent: FormGroup
+
+
+  @Input()
+  map: Map<number, Product>;
+
+  getProduct(id): Product {
+    return this.map.get(id)
+  }
 
   get stocks() {
     return (this.parent.get('stock') as FormArray).controls
