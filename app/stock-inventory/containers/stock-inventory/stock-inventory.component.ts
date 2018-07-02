@@ -1,9 +1,12 @@
-import {Component, OnInit} from '@angular/core';
-import {FormGroup, FormArray, FormBuilder} from "@angular/forms";
-import 'rxjs/add/observable/forkJoin'
-import {Item, Product} from "../../models/products.interface";
-import {StockInventoryService} from "../../services/stock-inventory.service";
-import {Observable} from "rxjs/Observable";
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
+
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/forkJoin';
+
+import { StockInventoryService } from '../../services/stock-inventory.service';
+
+import { Product, Item } from '../../models/product.interface';
 
 @Component({
   selector: 'stock-inventory',
@@ -11,44 +14,48 @@ import {Observable} from "rxjs/Observable";
   template: `
     <div class="stock-inventory">
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <stock-branch [parent]="form"></stock-branch>
-        <stock-selector [parent]="form" [products]="products"
-                        (added)="addStock($event)"
-        ></stock-selector>
-        <stock-products [parent]="form"
-                        [map]="productMap"
-                        (remove)="removeStock($event)"
-        ></stock-products>
+
+        <stock-branch
+          [parent]="form">
+        </stock-branch>
+
+        <stock-selector
+          [parent]="form"
+          [products]="products"
+          (added)="addStock($event)">
+        </stock-selector>
+
+        <stock-products
+          [parent]="form"
+          [map]="productMap"
+          (removed)="removeStock($event)">
+        </stock-products>
 
         <div class="stock-inventory__price">
-          Total: {{total | currency: 'USD':true}}
+          Total: {{ total | currency:'USD':true }}
         </div>
 
-
         <div class="stock-inventory__buttons">
-          <button type="submit"
-                  [disabled]="form.invalid">
-            Order Stock
+          <button 
+            type="submit"
+            [disabled]="form.invalid">
+            Order stock
           </button>
         </div>
 
-        <pre>{{form.value | json}}</pre>
+        <pre>{{ form.value | json }}</pre>
+
       </form>
     </div>
   `
 })
 export class StockInventoryComponent implements OnInit {
 
-  constructor(
-    private fb: FormBuilder,
-    private stockService: StockInventoryService
-  ) {
-  }
-
   products: Product[];
-  productMap: Map<number, Product>;
+
   total: number;
 
+  productMap: Map<number, Product>;
 
   form = this.fb.group({
     store: this.fb.group({
@@ -57,34 +64,40 @@ export class StockInventoryComponent implements OnInit {
     }),
     selector: this.createStock({}),
     stock: this.fb.array([])
-  });
+  })
+
+  constructor(
+    private fb: FormBuilder,
+    private stockService: StockInventoryService
+  ) {}
 
   ngOnInit() {
     const cart = this.stockService.getCartItems();
     const products = this.stockService.getProducts();
+
     Observable
       .forkJoin(cart, products)
       .subscribe(([cart, products]: [Item[], Product[]]) => {
+        
         const myMap = products
           .map<[number, Product]>(product => [product.id, product]);
-
+        
         this.productMap = new Map<number, Product>(myMap);
         this.products = products;
-
         cart.forEach(item => this.addStock(item));
-        this.calculateTotal(this.form.get('stock').value)
 
+        this.calculateTotal(this.form.get('stock').value);
         this.form.get('stock')
-          .valueChanges.subscribe(value=>this.calculateTotal(value));
+          .valueChanges.subscribe(value => this.calculateTotal(value));
 
+      });
 
-      })
   }
 
   calculateTotal(value: Item[]) {
     const total = value.reduce((prev, next) => {
-      return prev + next.quantity * this.productMap.get(next.product_id).price;
-    }, 0)
+      return prev + (next.quantity * this.productMap.get(next.product_id).price);
+    }, 0);
     this.total = total;
   }
 
@@ -92,24 +105,20 @@ export class StockInventoryComponent implements OnInit {
     return this.fb.group({
       product_id: parseInt(stock.product_id, 10) || '',
       quantity: stock.quantity || 10
-    })
+    });
   }
-
 
   addStock(stock) {
     const control = this.form.get('stock') as FormArray;
     control.push(this.createStock(stock));
   }
 
-  removeStock({group, index}: { group: FormGroup, index: number }) {
+  removeStock({ group, index }: { group: FormGroup, index: number }) {
     const control = this.form.get('stock') as FormArray;
     control.removeAt(index);
   }
 
-
   onSubmit() {
-    console.log(this.form.value)
-
+    console.log('Submit:', this.form.value);
   }
-
 }
