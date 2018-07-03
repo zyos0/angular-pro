@@ -13,7 +13,7 @@ const COUNTER_CONTROL_ACCESSOR = {
   styleUrls: ['stock-counter.component.scss'],
   template: `
     <div class="stock-counter"
-    [class.focused]>
+         [class.focused]>
       <div>
         <div
           tabindex="0"
@@ -106,6 +106,5 @@ export class StockCounterComponent implements ControlValueAccessor {
     }
     this.onTouch();
   }
-
 
 }
