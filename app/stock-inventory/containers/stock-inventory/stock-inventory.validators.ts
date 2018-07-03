@@ -7,7 +7,7 @@ export class StockValidators {
     return valid ? null : {invalidBranch: true}
   }
 
-  static checkStockExist(control: AbstractControl) {
+  static checkStockExists(control: AbstractControl) {
     const stockItem = control.get('stock');
     const selector = control.get('selector');
     if (!(stockItem && selector)) return null;

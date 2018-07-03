@@ -1,13 +1,14 @@
-import {Component, OnInit} from '@angular/core';
-import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, FormArray, Validators, AbstractControl } from '@angular/forms';
 
-import {Observable} from 'rxjs/Observable';
+import { StockValidators } from './stock-inventory.validators';
+
+import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/forkJoin';
 
-import {StockInventoryService} from '../../services/stock-inventory.service';
+import { StockInventoryService } from '../../services/stock-inventory.service';
 
-import {Item, Product} from '../../models/product.interface';
-import {StockValidators} from "./stock-inventory.validator";
+import { Product, Item } from '../../models/product.interface';
 
 @Component({
   selector: 'stock-inventory',
@@ -60,18 +61,21 @@ export class StockInventoryComponent implements OnInit {
 
   form = this.fb.group({
     store: this.fb.group({
-      branch: ['', [Validators.required, StockValidators.checkBranch]],
-      code: ['', [Validators.required]]
+      branch: [
+        '',
+        [Validators.required, StockValidators.checkBranch],
+        [this.validateBranch.bind(this)]
+      ],
+      code: ['', Validators.required]
     }),
     selector: this.createStock({}),
     stock: this.fb.array([])
-  },{validator:StockValidators.checkStockExist})
+  }, { validator: StockValidators.checkStockExists });
 
   constructor(
     private fb: FormBuilder,
     private stockService: StockInventoryService
-  ) {
-  }
+  ) {}
 
   ngOnInit() {
     const cart = this.stockService.getCartItems();
@@ -96,6 +100,12 @@ export class StockInventoryComponent implements OnInit {
 
   }
 
+  validateBranch(control: AbstractControl) {
+    return this.stockService
+      .checkBranchId(control.value)
+      .map((response: boolean) => response ? null : { unknownBranch: true });
+  }
+
   calculateTotal(value: Item[]) {
     const total = value.reduce((prev, next) => {
       return prev + (next.quantity * this.productMap.get(next.product_id).price);
@@ -115,7 +125,7 @@ export class StockInventoryComponent implements OnInit {
     control.push(this.createStock(stock));
   }
 
-  removeStock({group, index}: { group: FormGroup, index: number }) {
+  removeStock({ group, index }: { group: FormGroup, index: number }) {
     const control = this.form.get('stock') as FormArray;
     control.removeAt(index);
   }
