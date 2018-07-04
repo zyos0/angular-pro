@@ -56,9 +56,9 @@
   version "7.0.5"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.5.tgz#96a0f0a618b7b606f1ec547403c00650210bfbb7"
 
-"@ultimate/aot-loader@0.1.14":
-  version "0.1.14"
-  resolved "https://registry.yarnpkg.com/@ultimate/aot-loader/-/aot-loader-0.1.14.tgz#e3a790fabc8ce5b025f8e90998afc1cf0372b359"
+"@ultimate/aot-loader@0.1.15":
+  version "0.1.15"
+  resolved "https://registry.yarnpkg.com/@ultimate/aot-loader/-/aot-loader-0.1.15.tgz#71ac60151948025644220c9cc46999c0c6602292"
   dependencies:
     magic-string "0.19.0"
     source-map "0.5.6"
